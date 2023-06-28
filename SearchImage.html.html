@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            background-color: beige;
+        }
+
+        body {
+            padding-top: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+            padding-top: 10px;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            padding-top: 5px;
+            grid-gap: 20px;
+        }
+
+        input#search {
+            margin: 0 auto;
+            width: 100%;
+            height: 45px;
+            padding: 0 20px;
+            font-size: 1rem;
+            border: 1px solid #D0CFCE;
+            outline: none;
+
+            &:focus {
+                border: 1px solid #008ABF;
+                transition: 0.35s ease;
+                color: black;
+
+                &::-webkit-input-placeholder {
+                    transition: opacity 0.45s ease;
+                    opacity: 0;
+                }
+
+                &::-moz-placeholder {
+                    transition: opacity 0.45s ease;
+                    opacity: 0;
+                }
+
+                &:-ms-placeholder {
+                    transition: opacity 0.45s ease;
+                    opacity: 0;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <input type="search" id="search" placeholder="Search...">
+    <div id="imageContainer" class="grid-container"></div>
+    <script>
+        let searchTimeout;
+
+        document.getElementById("search").addEventListener("input", function (event) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(searchImage, 200);
+        });
+        function searchImage() {
+            const query = document.getElementById("search").value.toLowerCase();
+            const imageContainer = document.getElementById("imageContainer");
+            imageContainer.innerHTML = "";
+            fetch("https://pixabay.com/api/?key=37911768-641674ac5418f799706e06e12&q=" + query)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.hits.length > 0) {
+                        data.hits.forEach(img => {
+                            const imageUrl = document.createElement("img");
+                            imageUrl.src = img.webformatURL;
+                            const gridImage = document.createElement("div");
+                            gridImage.className = "grid-item";
+                            gridImage.appendChild(imageUrl);
+                            imageContainer.appendChild(gridImage);
+                            console.log(img)
+                        })
+                    } else {
+                        const msg = document.createElement("h4");
+                        imageContainer.textContent = "No images found.";
+                        imageContainer.appendChild(imageContainer);
+                    }
+                })
+        }
+    </script>
+</body>
+
+</html>
